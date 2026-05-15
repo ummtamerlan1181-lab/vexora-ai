@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vexora AI — Презентация студии</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#05050e;color:#f1f5f9;font-family:'Inter',sans-serif;}
+
+/* ── AMBIENT ── */
+.bg-ambient{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 25%,rgba(109,40,217,.22) 0%,transparent 55%),
+    radial-gradient(ellipse at 85% 75%,rgba(59,130,246,.15) 0%,transparent 55%),
+    radial-gradient(ellipse at 50% 0%,rgba(236,72,153,.1) 0%,transparent 45%);
+  animation:ambShift 10s ease-in-out infinite alternate;}
+@keyframes ambShift{0%{opacity:1}100%{opacity:.65;filter:hue-rotate(12deg)}}
+
+/* ── GRID ── */
+.hero-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(139,92,246,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(139,92,246,.05) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,0,0,.45) 0%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,0,0,.45) 0%,transparent 100%);}
+
+/* ── PROGRESS ── */
+#progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#7c3aed,#3b82f6,#ec4899);z-index:100;transition:width .4s ease;box-shadow:0 0 10px rgba(139,92,246,.7);}
+
+/* ── COUNTER ── */
+#counter{position:fixed;top:20px;right:24px;z-index:100;font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.05em;}
+#counter span{color:rgba(167,139,250,.8);}
+
+/* ── NAV DOTS ── */
+#dots{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:100;display:flex;gap:7px;align-items:center;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s ease;}
+.dot.active{width:20px;border-radius:3px;background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.dot:hover:not(.active){background:rgba(167,139,250,.5);}
+
+/* ── NAV ARROWS ── */
+.nav-btn{position:fixed;top:50%;transform:translateY(-50%);z-index:100;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;color:rgba(255,255,255,.5);}
+.nav-btn:hover{background:rgba(109,40,217,.3);border-color:rgba(139,92,246,.4);color:#fff;}
+#btn-prev{left:20px;}
+#btn-next{right:20px;}
+.nav-btn svg{flex-shrink:0;}
+
+/* ── SLIDES ── */
+#slides{position:relative;z-index:10;width:100%;height:100%;}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:60px 80px;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;transform:translateY(20px);}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.slide-inner{width:100%;max-width:1000px;margin:0 auto;}
+
+/* ── GLASS ── */
+.glass{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);border-radius:20px;}
+.glass-v{background:rgba(109,40,217,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.2);border-radius:20px;}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(109,40,217,.15);border:1px solid rgba(139,92,246,.25);border-radius:100px;padding:5px 14px;font-size:.72rem;font-weight:600;color:#a78bfa;letter-spacing:.04em;text-transform:uppercase;}
+
+/* ── GRADIENT TEXT ── */
+.g-v{background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.g-p{background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.g-b{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.g-anim{background:linear-gradient(135deg,#a78bfa 0%,#60a5fa 50%,#ec4899 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ── ORB ── */
+.orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;}
+
+/* ── STAT ── */
+.stat-num{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ── CHECKLIST ── */
+.check-item{display:flex;align-items:center;gap:10px;color:#94a3b8;font-size:.85rem;}
+.check-item svg{flex-shrink:0;}
+
+/* ── STEP DOT ── */
+.step-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;}
+
+/* ── PRICE TAG ── */
+.price-tag{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;}
+
+/* ── LOGO ── */
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;}
+
+/* ══════════════════════════════════════════════════
+   SLIDE-SPECIFIC
+══════════════════════════════════════════════════ */
+
+/* S1: Cover */
+.s1-h{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;}
+.s1-sub{font-size:1.05rem;color:#94a3b8;line-height:1.7;max-width:560px;}
+
+/* S2: Pain */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.pain-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px 18px;}
+.pain-icon{font-size:1.3rem;margin-bottom:8px;}
+.pain-title{font-size:.88rem;font-weight:600;color:#fff;margin-bottom:4px;}
+.pain-desc{font-size:.75rem;color:#64748b;line-height:1.5;}
+
+/* S3: Solution */
+.sol-list{display:flex;flex-direction:column;gap:12px;}
+.sol-item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;}
+.sol-num{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;}
+
+/* S4: Services */
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.srv-item{padding:18px;border-radius:16px;}
+.srv-title{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:5px;}
+.srv-desc{font-size:.72rem;color:#64748b;line-height:1.5;}
+
+/* S5: Process */
+.proc-list{display:flex;flex-direction:column;gap:10px;}
+.proc-item{display:flex;align-items:center;gap:14px;padding:12px 18px;border-radius:14px;}
+
+/* S6: Portfolio */
+.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.port-item{border-radius:16px;overflow:hidden;}
+.port-preview{height:100px;display:flex;align-items:center;justify-content:center;font-size:.65rem;}
+.port-body{padding:14px;}
+.port-title{font-size:.88rem;font-weight:600;color:#fff;margin-bottom:4px;}
+.port-desc{font-size:.72rem;color:#64748b;line-height:1.4;}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.65rem;font-weight:500;margin:2px 2px 0 0;}
+
+/* S7: Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;}
+.price-card{border-radius:18px;padding:24px;}
+.pc-name{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px;}
+.pc-sub{font-size:.75rem;color:#64748b;margin-bottom:14px;}
+.pc-price{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:16px;}
+.pc-feature{display:flex;align-items:center;gap:7px;font-size:.75rem;color:#94a3b8;margin-bottom:8px;}
+
+/* S8: Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{text-align:center;padding:28px 16px;border-radius:18px;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:8px;}
+.stat-label{font-size:.78rem;color:#64748b;}
+
+/* S9: CTA */
+.cta-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;border-radius:16px;font-size:1rem;font-weight:700;text-decoration:none;font-family:'Space Grotesk',sans-serif;background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;box-shadow:0 0 50px rgba(109,40,217,.5);transition:all .25s ease;}
+.cta-btn:hover{box-shadow:0 0 70px rgba(109,40,217,.7);transform:translateY(-2px);}
+
+/* ── KEYBOARD HINT ── */
+#hint{position:fixed;bottom:55px;right:24px;z-index:100;font-size:.65rem;color:rgba(255,255,255,.2);letter-spacing:.04em;}
+
+/* ── STAR SVG ── */
+.star-bg{position:absolute;width:200px;height:200px;opacity:.03;animation:spinSlow 90s linear infinite;pointer-events:none;}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+
+/* mobile */
+@media(max-width:700px){
+  .slide{padding:50px 20px 60px;}
+  .pain-grid{grid-template-columns:repeat(2,1fr);}
+  .srv-grid{grid-template-columns:repeat(2,1fr);}
+  .port-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .s1-h{font-size:2rem;}
+  #btn-prev{left:8px;}#btn-next{right:8px;}
+  .nav-btn{width:36px;height:36px;}
+  #hint{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-ambient"></div>
+<div class="hero-grid"></div>
+
+<div id="progress-bar" style="width:11.1%"></div>
+<div id="counter"><span id="cur-num">1</span> / <span id="tot-num">9</span></div>
+
+<!-- NAV -->
+<button class="nav-btn" id="btn-prev" onclick="prev()" aria-label="Назад">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+</button>
+<button class="nav-btn" id="btn-next" onclick="next()" aria-label="Вперёд">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+</button>
+
+<div id="slides">
+
+<!-- ══════ SLIDE 1: COVER ══════ -->
+<div class="slide active" data-slide="0">
+  <div class="orb" style="width:400px;height:400px;background:#6d28d9;opacity:.18;top:-80px;left:-100px;"></div>
+  <div class="orb" style="width:300px;height:300px;background:#3b82f6;opacity:.12;bottom:-60px;right:-60px;"></div>
+
+  <!-- Big decorative star -->
+  <svg class="star-bg" style="top:50%;left:50%;transform:translate(-50%,-50%)" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 L110 90 L190 100 L110 110 L100 190 L90 110 L10 100 L90 90 Z" fill="white"/>
+    <path d="M100 35 L107 93 L165 100 L107 107 L100 165 L93 107 L35 100 L93 93 Z" fill="none" stroke="white" stroke-width="1"/>
+  </svg>
+
+  <div class="slide-inner" style="display:flex;align-items:center;gap:80px;">
+    <!-- Left -->
+    <div style="flex:1;min-width:0;">
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,40,217,.25);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#a78bfa" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5" stroke="#a78bfa" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2 12l10 5 10-5" stroke="#60a5fa" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">Vexora <span class="g-v">AI</span></span>
+      </div>
+
+      <div class="badge" style="margin-bottom:24px;">Premium Digital Studio</div>
+
+      <h1 class="s1-h" style="margin-bottom:20px;">
+        Digital-продукт,<br>
+        который <span class="g-anim">работает и продаёт</span>
+      </h1>
+
+      <p class="s1-sub" style="margin-bottom:36px;">
+        Создаём premium-лендинги, Telegram-боты и AI-автоматизацию для экспертов и брендов.
+        Системный подход — от брифа до запуска.
+      </p>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:rgba(255,255,255,.6);">
+          <div style="width:6px;height:6px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.8);"></div>
+          15+ проектов запущено
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:rgba(255,255,255,.6);">
+          <div style="width:6px;height:6px;border-radius:50%;background:#60a5fa;box-shadow:0 0 8px rgba(96,165,250,.8);"></div>
+          Срок от 3 недель
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:rgba(255,255,255,.6);">
+          <div style="width:6px;height:6px;border-radius:50%;background:#ec4899;box-shadow:0 0 8px rgba(236,72,153,.8);"></div>
+          100% custom-дизайн
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: mini preview card -->
+    <div style="flex-shrink:0;width:260px;" class="glass" style="padding:24px;">
+      <div class="glass" style="padding:22px;border:1px solid rgba(139,92,246,.15);">
+        <!-- Mock browser -->
+        <div style="background:rgba(8,8,22,.8);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);">
+          <div style="display:flex;align-items:center;gap:5px;padding:7px 10px;background:rgba(14,14,28,.9);border-bottom:1px solid rgba(255,255,255,.05);">
+            <div style="width:7px;height:7px;border-radius:50%;background:#f87171;opacity:.7;"></div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#fbbf24;opacity:.7;"></div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#34d399;opacity:.7;"></div>
+            <div style="flex:1;height:12px;border-radius:10px;background:rgba(255,255,255,.05);max-width:80px;margin-left:5px;"></div>
+          </div>
+          <div style="padding:12px;">
+            <div style="height:8px;width:70%;border-radius:4px;background:linear-gradient(90deg,rgba(139,92,246,.5),rgba(96,165,250,.3));margin-bottom:8px;"></div>
+            <div style="height:5px;width:55%;border-radius:3px;background:rgba(255,255,255,.08);margin-bottom:5px;"></div>
+            <div style="height:5px;width:40%;border-radius:3px;background:rgba(255,255,255,.05);margin-bottom:12px;"></div>
+            <div style="height:22px;width:90px;border-radius:8px;background:linear-gradient(135deg,rgba(109,40,217,.6),rgba(99,102,241,.4));border:1px solid rgba(139,92,246,.3);"></div>
+          </div>
+        </div>
+
+        <!-- Telegram bot preview -->
+        <div style="margin-top:10px;background:rgba(8,8,22,.7);border-radius:10px;padding:10px;border:1px solid rgba(59,130,246,.12);">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <div style="width:18px;height:18px;border-radius:50%;background:rgba(59,130,246,.3);"></div>
+            <div style="height:7px;width:60px;border-radius:3px;background:rgba(59,130,246,.25);"></div>
+          </div>
+          <div style="height:18px;width:85%;border-radius:8px 8px 8px 3px;background:rgba(109,40,217,.2);border:1px solid rgba(139,92,246,.15);padding:0 8px;display:flex;align-items:center;">
+            <div style="height:5px;width:70%;border-radius:2px;background:rgba(167,139,250,.3);"></div>
+          </div>
+          <div style="margin-top:5px;height:18px;width:60%;border-radius:8px 8px 3px 8px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);padding:0 8px;display:flex;align-items:center;margin-left:auto;">
+            <div style="height:5px;width:70%;border-radius:2px;background:rgba(96,165,250,.3);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 2: PAIN ══════ -->
+<div class="slide" data-slide="1">
+  <div class="slide-inner">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="badge" style="margin-bottom:14px;">Узнаёте себя?</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;margin-bottom:10px;">
+        Боли, с которыми <span class="g-p">приходят ко мне</span>
+      </h2>
+      <p style="color:#64748b;font-size:.88rem;">Хотя бы один пункт — и вам нужен Vexora AI</p>
+    </div>
+
+    <div class="pain-grid">
+      <div class="pain-item">
+        <div class="pain-icon">⚡</div>
+        <div class="pain-title">Сайт выглядит дёшево</div>
+        <div class="pain-desc">Шаблонный дизайн отпугивает клиентов ещё до первого слова</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">📦</div>
+        <div class="pain-title">Не могу упаковать услуги</div>
+        <div class="pain-desc">Сложно объяснить ценность — клиенты уходят, «непонятно за что платить»</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">🔄</div>
+        <div class="pain-title">Всё вручную</div>
+        <div class="pain-desc">Заявки, запись, вопросы — всё съедает время. Нет системы</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">😶</div>
+        <div class="pain-title">Выглядите несерьёзно</div>
+        <div class="pain-desc">Telegram-канал и конструктор не создают профессиональный бренд</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">🗺️</div>
+        <div class="pain-title">Нет воронки и системы</div>
+        <div class="pain-desc">Клиент приходит — и непонятно, что делать дальше. Нет пути к покупке</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">⏱️</div>
+        <div class="pain-title">Нет времени разобраться</div>
+        <div class="pain-desc">Сайты, боты, AI — всё нужно, но нет времени разбираться самому</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 3: SOLUTION ══════ -->
+<div class="slide" data-slide="2">
+  <div class="slide-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div>
+      <div class="badge" style="margin-bottom:20px;">Решение</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin-bottom:20px;">
+        Digital-студия<br><span class="g-v">нового поколения</span>
+      </h2>
+      <p style="color:#64748b;font-size:.88rem;line-height:1.7;margin-bottom:24px;">
+        Vexora AI — это системный подход к digital-упаковке.
+        Совмещаю дизайн, маркетинг, AI и автоматизацию.
+        Думаю не только о том, как сайт <em>выглядит</em>, но и как он <strong style="color:#e2e8f0">продаёт</strong>.
+      </p>
+
+      <!-- Stats mini -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+        <div class="glass" style="padding:14px 16px;border-radius:14px;">
+          <div class="stat-num" style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;">15+</div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:3px;">Проектов запущено</div>
+        </div>
+        <div class="glass" style="padding:14px 16px;border-radius:14px;">
+          <div class="stat-num" style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;">3 нед</div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:3px;">Средний срок</div>
+        </div>
+        <div class="glass" style="padding:14px 16px;border-radius:14px;">
+          <div class="stat-num" style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;">100%</div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:3px;">Custom-дизайн</div>
+        </div>
+        <div class="glass" style="padding:14px 16px;border-radius:14px;">
+          <div class="stat-num" style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;">24/7</div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:3px;">Работают боты</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: What client gets -->
+    <div>
+      <h3 style="font-size:.78rem;font-weight:600;color:#a78bfa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">Что вы получите после запуска</h3>
+      <div class="sol-list">
+        <div class="sol-item">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:#fff;">Premium-сайт, который продаёт</div>
+            <div style="font-size:.73rem;color:#64748b;margin-top:2px;">Структура и воронка, ведущая к заявке</div>
+          </div>
+        </div>
+        <div class="sol-item">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:#fff;">Автоматизация заявок 24/7</div>
+            <div style="font-size:.73rem;color:#64748b;margin-top:2px;">Бот работает даже когда вы спите</div>
+          </div>
+        </div>
+        <div class="sol-item">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:#fff;">Доверие с первых секунд</div>
+            <div style="font-size:.73rem;color:#64748b;margin-top:2px;">Профессиональный вид до первого слова</div>
+          </div>
+        </div>
+        <div class="sol-item">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:#fff;">Система, а не просто файлы</div>
+            <div style="font-size:.73rem;color:#64748b;margin-top:2px;">Сайт + бот + Telegram — единая инфраструктура</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 4: SERVICES ══════ -->
+<div class="slide" data-slide="3">
+  <div class="slide-inner">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div class="badge" style="margin-bottom:12px;">Что я делаю</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;">
+        Услуги <span class="g-v">Vexora AI</span>
+      </h2>
+    </div>
+
+    <div class="srv-grid">
+      <div class="srv-item glass-v" style="border:1px solid rgba(139,92,246,.2);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">🖥️</div>
+        <div class="srv-title">Premium-лендинги</div>
+        <div class="srv-desc">Продающие сайты для экспертов и образовательных проектов. Custom-дизайн. Без шаблонов.</div>
+        <div class="badge" style="font-size:.58rem;margin-top:10px;padding:3px 9px;">✦ Топ-услуга</div>
+      </div>
+      <div class="srv-item glass" style="border:1px solid rgba(59,130,246,.15);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">💬</div>
+        <div class="srv-title">Telegram-боты</div>
+        <div class="srv-desc">Автоматизация заявок, записи, FAQ. Бот работает 24/7 без вашего участия.</div>
+      </div>
+      <div class="srv-item glass" style="border:1px solid rgba(236,72,153,.12);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">🤖</div>
+        <div class="srv-title">AI-автоматизация</div>
+        <div class="srv-desc">Умные сценарии и AI-инструменты для роста эффективности бизнеса.</div>
+      </div>
+      <div class="srv-item glass" style="border:1px solid rgba(139,92,246,.12);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">📦</div>
+        <div class="srv-title">Digital-упаковка</div>
+        <div class="srv-desc">Структура, смыслы, UX и дизайн. Упакую так, чтобы не было стыдно.</div>
+      </div>
+      <div class="srv-item glass" style="border:1px solid rgba(59,130,246,.12);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">🎨</div>
+        <div class="srv-title">UX/UI-дизайн</div>
+        <div class="srv-desc">Современные интерфейсы с premium-эстетикой. Адаптивность и анимации.</div>
+      </div>
+      <div class="srv-item glass" style="border:1px solid rgba(236,72,153,.12);">
+        <div style="font-size:1.2rem;margin-bottom:8px;">🔍</div>
+        <div class="srv-title">Консультация и аудит</div>
+        <div class="srv-desc">Разбор структуры сайта, воронки и digital-стратегии. Конкретный план за сессию.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 5: PROCESS ══════ -->
+<div class="slide" data-slide="4">
+  <div class="slide-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div>
+      <div class="badge" style="margin-bottom:20px;">Как я работаю</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin-bottom:16px;">
+        От идеи до <span class="g-p">запущенного проекта</span>
+      </h2>
+      <p style="color:#64748b;font-size:.88rem;line-height:1.7;margin-bottom:24px;">
+        Чёткий процесс без хаоса — вы знаете что происходит на каждом шаге
+      </p>
+      <div class="glass-v" style="padding:16px 20px;border-radius:14px;">
+        <div style="font-size:.78rem;color:#a78bfa;font-weight:600;margin-bottom:6px;">Средний срок проекта</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;" class="g-v">3 недели</div>
+        <div style="font-size:.72rem;color:#64748b;margin-top:4px;">от брифа до запуска</div>
+      </div>
+    </div>
+
+    <div class="proc-list">
+      <div class="proc-item glass" style="border:1px solid rgba(255,255,255,.06);">
+        <div class="step-circle" style="background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.3);color:#a78bfa;">01</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:2px;">Бриф и анализ</div>
+          <div style="font-size:.73rem;color:#64748b;">Разбираюсь в проекте, аудитории и целях</div>
+        </div>
+      </div>
+      <div class="proc-item glass" style="border:1px solid rgba(255,255,255,.06);">
+        <div class="step-circle" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.22);color:#60a5fa;">02</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:2px;">Структура и стратегия</div>
+          <div style="font-size:.73rem;color:#64748b;">Продающая структура и воронка до старта</div>
+        </div>
+      </div>
+      <div class="proc-item glass" style="border:1px solid rgba(255,255,255,.06);">
+        <div class="step-circle" style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.22);color:#f472b6;">03</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:2px;">Дизайн и разработка</div>
+          <div style="font-size:.73rem;color:#64748b;">Premium-дизайн + адаптивность + анимации</div>
+        </div>
+      </div>
+      <div class="proc-item glass" style="border:1px solid rgba(255,255,255,.06);">
+        <div class="step-circle" style="background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.3);color:#a78bfa;">04</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:2px;">Запуск и интеграции</div>
+          <div style="font-size:.73rem;color:#64748b;">Telegram, формы, размещение под ключ</div>
+        </div>
+      </div>
+      <div class="proc-item glass" style="border:1px solid rgba(255,255,255,.06);">
+        <div class="step-circle" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.22);color:#60a5fa;">05</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:2px;">Результат и масштабирование</div>
+          <div style="font-size:.73rem;color:#64748b;">Передаю с инструкцией и поддержкой</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 6: PORTFOLIO ══════ -->
+<div class="slide" data-slide="5">
+  <div class="slide-inner">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div class="badge" style="margin-bottom:12px;">Работы</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;">
+        Портфолио <span class="g-v">и проекты</span>
+      </h2>
+    </div>
+
+    <div class="port-grid">
+      <!-- Card 1: Landing -->
+      <div class="port-item glass" style="border:1px solid rgba(255,255,255,.07);">
+        <div class="port-preview" style="background:linear-gradient(145deg,rgba(109,40,217,.2) 0%,rgba(59,130,246,.1) 60%,rgba(5,5,14,.98) 100%);">
+          <div style="width:85%;border-radius:8px;overflow:hidden;border:1px solid rgba(139,92,246,.2);background:rgba(8,8,22,.9);">
+            <div style="height:10px;display:flex;align-items:center;gap:3px;padding:0 7px;background:rgba(14,14,28,.9);">
+              <div style="width:5px;height:5px;border-radius:50%;background:#f87171;opacity:.7;"></div>
+              <div style="width:5px;height:5px;border-radius:50%;background:#fbbf24;opacity:.7;"></div>
+              <div style="width:5px;height:5px;border-radius:50%;background:#34d399;opacity:.7;"></div>
+            </div>
+            <div style="padding:8px;">
+              <div style="height:6px;width:60%;border-radius:3px;background:linear-gradient(90deg,rgba(139,92,246,.5),rgba(96,165,250,.3));margin-bottom:5px;"></div>
+              <div style="height:4px;width:80%;border-radius:2px;background:rgba(255,255,255,.07);margin-bottom:3px;"></div>
+              <div style="height:4px;width:50%;border-radius:2px;background:rgba(255,255,255,.05);margin-bottom:7px;"></div>
+              <div style="height:16px;width:70px;border-radius:6px;background:linear-gradient(135deg,rgba(109,40,217,.5),rgba(99,102,241,.4));border:1px solid rgba(139,92,246,.3);"></div>
+            </div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="port-title">Устаза Асия — Таджвид</div>
+          <div class="port-desc" style="margin-bottom:10px;">Premium-лендинг для онлайн-занятий по Корану. Dark futuristic × Islamic</div>
+          <div>
+            <span class="tag" style="background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2);">HTML/CSS</span>
+            <span class="tag" style="background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.18);">Tailwind</span>
+            <span class="tag" style="background:rgba(236,72,153,.08);color:#f472b6;border:1px solid rgba(236,72,153,.18);">Лендинг</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Bot -->
+      <div class="port-item glass" style="border:1px solid rgba(255,255,255,.07);">
+        <div class="port-preview" style="background:linear-gradient(145deg,rgba(59,130,246,.15) 0%,rgba(109,40,217,.08) 60%,rgba(5,5,14,.98) 100%);">
+          <div style="width:85%;background:rgba(8,8,22,.85);border-radius:8px;padding:8px;border:1px solid rgba(59,130,246,.15);">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+              <div style="width:16px;height:16px;border-radius:50%;background:rgba(59,130,246,.3);"></div>
+              <div style="height:5px;width:50px;border-radius:3px;background:rgba(59,130,246,.2);"></div>
+            </div>
+            <div style="height:14px;width:80%;border-radius:6px 6px 6px 2px;background:rgba(109,40,217,.2);border:1px solid rgba(139,92,246,.15);margin-bottom:5px;"></div>
+            <div style="height:14px;width:55%;border-radius:6px 6px 2px 6px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);margin-left:auto;margin-bottom:5px;"></div>
+            <div style="height:14px;width:75%;border-radius:6px 6px 6px 2px;background:rgba(109,40,217,.2);border:1px solid rgba(139,92,246,.15);"></div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="port-title">Telegram-бот автоматизации</div>
+          <div class="port-desc" style="margin-bottom:10px;">Заявки, FAQ, запись — бот работает 24/7 без участия менеджера</div>
+          <div>
+            <span class="tag" style="background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.18);">Python</span>
+            <span class="tag" style="background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2);">aiogram</span>
+            <span class="tag" style="background:rgba(236,72,153,.08);color:#f472b6;border:1px solid rgba(236,72,153,.18);">AI-логика</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: AI -->
+      <div class="port-item glass" style="border:1px solid rgba(255,255,255,.07);">
+        <div class="port-preview" style="background:linear-gradient(145deg,rgba(236,72,153,.12) 0%,rgba(109,40,217,.08) 60%,rgba(5,5,14,.98) 100%);">
+          <div style="width:85%;background:rgba(8,8,22,.85);border-radius:8px;padding:8px;border:1px solid rgba(236,72,153,.12);">
+            <div style="display:flex;align-items:center;margin-bottom:8px;">
+              <div style="flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;"></div>
+              <div style="width:30px;height:10px;border-radius:4px;margin-left:6px;background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.2);"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;">
+              <div style="width:28px;height:22px;border-radius:6px;background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.28);display:flex;align-items:center;justify-content:center;">
+                <div style="width:8px;height:8px;border-radius:3px;background:rgba(244,114,182,.65);"></div>
+              </div>
+              <div style="flex:1;height:2px;background:linear-gradient(90deg,rgba(236,72,153,.4),rgba(139,92,246,.35));"></div>
+              <div style="width:28px;height:22px;border-radius:6px;background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;">
+                <div style="width:8px;height:8px;border-radius:50%;background:rgba(167,139,250,.7);"></div>
+              </div>
+              <div style="flex:1;height:2px;background:linear-gradient(90deg,rgba(139,92,246,.35),rgba(59,130,246,.35));"></div>
+              <div style="width:28px;height:22px;border-radius:6px;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center;">
+                <div style="width:8px;height:8px;border-radius:3px;background:rgba(96,165,250,.7);"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;height:16px;border-radius:4px;background:rgba(244,114,182,.06);border:1px solid rgba(244,114,182,.1);"></div>
+              <div style="flex:1;height:16px;border-radius:4px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.1);"></div>
+              <div style="flex:1;height:16px;border-radius:4px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.1);"></div>
+            </div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="port-title">AI-автоматизация процессов</div>
+          <div class="port-desc" style="margin-bottom:10px;">Умные сценарии для образовательного проекта. В процессе</div>
+          <div>
+            <span class="tag" style="background:rgba(236,72,153,.08);color:#f472b6;border:1px solid rgba(236,72,153,.18);">AI</span>
+            <span class="tag" style="background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2);">Automation</span>
+            <span class="tag" style="background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.18);">n8n</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 7: PRICING ══════ -->
+<div class="slide" data-slide="6">
+  <div class="slide-inner">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div class="badge" style="margin-bottom:12px;">Стоимость</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.025em;margin-bottom:8px;">
+        Прозрачные <span class="g-v">цены</span>
+      </h2>
+      <p style="color:#64748b;font-size:.82rem;">Точная стоимость — после брифа. Ниже — ориентировочные диапазоны</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Tier 1 -->
+      <div class="price-card glass" style="border:1px solid rgba(255,255,255,.07);">
+        <div class="pc-name">Консультация</div>
+        <div class="pc-sub">Аудит и стратегия</div>
+        <div class="pc-price g-v">от 3 000 ₽</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Разбор структуры / воронки</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Digital-аудит проекта</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Конкретный план действий</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>60–90 мин в Telegram</div>
+      </div>
+
+      <!-- Tier 2 — Featured -->
+      <div class="price-card" style="background:rgba(109,40,217,.12);border:1px solid rgba(139,92,246,.3);border-radius:18px;padding:24px;box-shadow:0 0 50px rgba(109,40,217,.15);position:relative;">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);">
+          <div class="badge" style="font-size:.6rem;padding:3px 12px;">✦ Популярно</div>
+        </div>
+        <div class="pc-name">Premium-лендинг</div>
+        <div class="pc-sub">Сайт под ключ</div>
+        <div class="pc-price g-v">от 15 000 ₽</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Бриф + структура + стратегия</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Premium custom дизайн</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Адаптивность + анимации</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Интеграция Telegram</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Размещение + поддержка</div>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="price-card glass" style="border:1px solid rgba(59,130,246,.12);">
+        <div class="pc-name">Telegram-бот</div>
+        <div class="pc-sub">Автоматизация под ключ</div>
+        <div class="pc-price g-b">от 10 000 ₽</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Разработка под задачу</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Заявки, запись, FAQ</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>AI-логика и сценарии</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Интеграция с сайтом / CRM</div>
+        <div class="pc-feature"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Запуск + инструкция</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 8: STATS ══════ -->
+<div class="slide" data-slide="7">
+  <div class="orb" style="width:500px;height:500px;background:#6d28d9;opacity:.12;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div class="badge" style="margin-bottom:20px;">Результаты</div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:-.025em;margin-bottom:10px;">
+      Цифры говорят <span class="g-anim">сами за себя</span>
+    </h2>
+    <p style="color:#64748b;font-size:.88rem;margin-bottom:40px;">Реальные показатели реальных проектов</p>
+
+    <div class="stats-grid">
+      <div class="stat-card glass" style="border:1px solid rgba(139,92,246,.15);">
+        <div class="stat-val stat-num">15+</div>
+        <div class="stat-label">проектов запущено</div>
+      </div>
+      <div class="stat-card glass" style="border:1px solid rgba(59,130,246,.12);">
+        <div class="stat-val" style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Space Grotesk',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:8px;">3 нед</div>
+        <div class="stat-label">средний срок</div>
+      </div>
+      <div class="stat-card glass" style="border:1px solid rgba(236,72,153,.1);">
+        <div class="stat-val" style="background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Space Grotesk',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:8px;">100%</div>
+        <div class="stat-label">custom-дизайн</div>
+      </div>
+      <div class="stat-card glass" style="border:1px solid rgba(139,92,246,.15);">
+        <div class="stat-val stat-num">24/7</div>
+        <div class="stat-label">боты работают</div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;" class="glass-v" style="padding:18px 28px;border-radius:14px;display:inline-block;">
+      <p style="color:#94a3b8;font-size:.85rem;">✦ Лендинги · Telegram-боты · AI-автоматизация · Под ключ</p>
+    </div>
+    <div class="glass-v" style="display:inline-block;padding:16px 28px;border-radius:14px;margin-top:28px;">
+      <p style="color:#94a3b8;font-size:.85rem;">✦ Лендинги · Telegram-боты · AI-автоматизация · Под ключ</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SLIDE 9: CTA ══════ -->
+<div class="slide" data-slide="8">
+  <div class="orb" style="width:600px;height:600px;background:#6d28d9;opacity:.15;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="orb" style="width:300px;height:300px;background:#ec4899;opacity:.07;top:10%;right:10%;"></div>
+  <div class="orb" style="width:250px;height:250px;background:#3b82f6;opacity:.08;bottom:10%;left:10%;"></div>
+
+  <div class="slide-inner" style="text-align:center;max-width:700px;">
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;">
+      <div style="width:40px;height:40px;border-radius:12px;background:rgba(109,40,217,.25);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#a78bfa" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M2 17l10 5 10-5" stroke="#a78bfa" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M2 12l10 5 10-5" stroke="#60a5fa" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="logo-text" style="font-size:1.3rem;">Vexora <span class="g-v">AI</span></span>
+    </div>
+
+    <div class="badge" style="margin-bottom:24px;">Начнём работу?</div>
+
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:20px;">
+      Готов сделать ваш проект<br>
+      <span class="g-anim">профессиональным и продающим</span>
+    </h2>
+
+    <p style="color:#64748b;font-size:.95rem;line-height:1.7;max-width:500px;margin:0 auto 40px;">
+      Напишите в Telegram — обсудим ваш проект, задачи и стоимость.
+      Отвечаю быстро.
+    </p>
+
+    <a href="https://t.me/bint_andrey" target="_blank" class="cta-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/>
+      </svg>
+      Написать в Telegram
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <p style="color:rgba(255,255,255,.2);font-size:.72rem;margin-top:20px;letter-spacing:.04em;">
+      @bint_andrey · Vexora AI Studio
+    </p>
+  </div>
+</div>
+
+</div><!-- /slides -->
+
+<!-- DOTS -->
+<div id="dots">
+  <div class="dot active" onclick="goTo(0)" title="Обложка"></div>
+  <div class="dot" onclick="goTo(1)" title="Боли"></div>
+  <div class="dot" onclick="goTo(2)" title="Решение"></div>
+  <div class="dot" onclick="goTo(3)" title="Услуги"></div>
+  <div class="dot" onclick="goTo(4)" title="Процесс"></div>
+  <div class="dot" onclick="goTo(5)" title="Портфолио"></div>
+  <div class="dot" onclick="goTo(6)" title="Цены"></div>
+  <div class="dot" onclick="goTo(7)" title="Статистика"></div>
+  <div class="dot" onclick="goTo(8)" title="Контакт"></div>
+</div>
+
+<div id="hint">← → стрелки / пробел / свайп</div>
+
+<script>
+const TOTAL = 9;
+let cur = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(TOTAL - 1, n));
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
+  document.getElementById('cur-num').textContent = cur + 1;
+  document.getElementById('progress-bar').style.width = ((cur + 1) / TOTAL * 100) + '%';
+  document.getElementById('btn-prev').style.opacity = cur === 0 ? '0.3' : '1';
+  document.getElementById('btn-next').style.opacity = cur === TOTAL - 1 ? '0.3' : '1';
+}
+
+function next() { goTo(cur + 1); }
+function prev() { goTo(cur - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); prev(); }
+});
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = tx - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 40) dx > 0 ? next() : prev();
+}, { passive: true });
+
+// Init
+goTo(0);
+</script>
+</body>
+</html>
